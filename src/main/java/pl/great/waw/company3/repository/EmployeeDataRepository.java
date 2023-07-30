@@ -5,10 +5,8 @@ import pl.great.waw.company3.domain.EmployeeData;
 import pl.great.waw.company3.repository.sorter.BubbleSort;
 import pl.great.waw.company3.repository.sorter.Sorter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -43,6 +41,48 @@ public class EmployeeDataRepository {
         return employeeDataFromRepo.stream()
                 .filter(employeeData -> employeeData.getId().equals(employeeId))
                 .collect(Collectors.toList());
+    }
+
+    public List<EmployeeData> getEmployeeSalaryByMonthAndYear(String employeePesel, int month, int year) {
+        return employeeDataFromRepo.stream()
+                .filter(employeeData -> employeeData.getEmployeePesel().equals(employeePesel))
+                .filter(employeeData -> Objects.equals(employeeData.getMonth(), month) && Objects.equals(employeeData.getYear(), year))
+                .collect(Collectors.toList());
+    }
+
+    public BigDecimal getSalaryByPeselInYear(String pesel, int year) {
+        BigDecimal totalSalary = employeeDataFromRepo.stream()
+                .filter(employeeData -> employeeData.getEmployeePesel().equals(pesel) && employeeData.getYear() == year)
+                .map(EmployeeData::getSalaryMonth)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalSalary;
+    }
+
+    public BigDecimal getTotalSalaryForEmployee(String pesel) {
+        BigDecimal totalSalary = employeeDataFromRepo.stream()
+                .filter(employeeData -> employeeData.getEmployeePesel().equals(pesel))
+                .map(EmployeeData::getSalaryMonth)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalSalary;
+    }
+
+    public Map<Integer, BigDecimal> getTotalSalaryForEmployeeInAllYears(String pesel) {
+        Map<Integer, BigDecimal> totalSalaryByYear = employeeDataFromRepo.stream()
+                .filter(employeeData -> employeeData.getEmployeePesel().equals(pesel))
+                .collect(Collectors.groupingBy(EmployeeData::getYear,
+                        Collectors.mapping(EmployeeData::getSalaryMonth, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+
+        return totalSalaryByYear;
+    }
+
+    public BigDecimal getTotalSalaryForAllEmployees() {
+        BigDecimal totalSalary = employeeDataFromRepo.stream()
+                .map(EmployeeData::getSalaryMonth)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalSalary;
     }
 
     public EmployeeData updateData(String employeeId, EmployeeData employeeData) {

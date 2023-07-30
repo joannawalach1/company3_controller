@@ -17,15 +17,14 @@ public class EmployeeDataMapper {
                 employeeData.getUpdated());
     }
 
-    public static EmployeeData toDto(EmployeeDataDto employeeDataDto) {
+    public static EmployeeData toDto(EmployeeData employeeDataDto) {
         return new EmployeeData(
                 employeeDataDto.getId(),
                 employeeDataDto.getEmployeePesel(),
                 employeeDataDto.getMonth(),
                 employeeDataDto.getYear(),
-                employeeDataDto.getMonthSalary(),
+                employeeDataDto.getSalaryMonth(),
                 employeeDataDto.getCreated(),
                 employeeDataDto.getUpdated());
-
     }
 }

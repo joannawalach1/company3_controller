@@ -1,8 +1,6 @@
 package pl.great.waw.company3.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.great.waw.company3.controller.EmployeeDataDto;
 import pl.great.waw.company3.controller.EmployeeDto;
 import pl.great.waw.company3.domain.Employee;
 import pl.great.waw.company3.domain.EmployeeData;
@@ -11,40 +9,35 @@ import pl.great.waw.company3.repository.EmployeeRepository;
 import pl.great.waw.company3.service.mapper.EmployeeDataMapper;
 import pl.great.waw.company3.service.mapper.EmployeeMapper;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeDataRepository employeeDataRepository;
+    private final EmployeeMapper employeeMapper;
+    private final EmployeeDataMapper employeeDataMapper;
 
-    @Autowired
-    private EmployeeDataRepository employeeDataRepository;
+    public EmployeeService(EmployeeRepository employeeRepository, EmployeeDataRepository employeeDataRepository, EmployeeMapper employeeMapper, EmployeeDataMapper employeeDataMapper) {
+        this.employeeRepository = employeeRepository;
+        this.employeeDataRepository = employeeDataRepository;
+        this.employeeMapper = employeeMapper;
+        this.employeeDataMapper = employeeDataMapper;
+    }
 
-    @Autowired
-    private EmployeeMapper employeeMapper;
-
-    @Autowired
-    private EmployeeDataMapper employeeDataMapper;
-
-    public EmployeeDto create(EmployeeDto dto) {
-        Employee employee = employeeMapper.fromDto(dto);
-        Employee employeeSaved1 = employeeRepository.create(employee);
+    public EmployeeDto create(EmployeeDto employeeDto) {
+        Employee employeeSaved1 = employeeRepository.create(employeeMapper.fromDto(employeeDto));
         return employeeMapper.toDto(employeeSaved1);
     }
 
-//    public EmployeeDataDto createData(EmployeeDataDto employeeDataDto) {
-//        EmployeeData employeeData = employeeDataMapper.fromDto(employeeData);
-//        EmployeeDataDto employeeSaved2 = employeeDataRepository.createData(employeeDataDto);
-//        return employeeDataMapper.toDto(employeeSaved2);
-//    }
-
-
     public EmployeeDto get(String pesel) {
-        return this.employeeMapper.toDto(this.employeeRepository.get(pesel));
+        Employee employee = employeeRepository.get(pesel);
+        return employeeMapper.toDto(employee);
     }
 
     public boolean delete(String pesel) {
@@ -52,12 +45,11 @@ public class EmployeeService {
     }
 
     public EmployeeDto update(EmployeeDto employeeDto) {
-        Employee employee = this.employeeMapper.fromDto(employeeDto);
-        return this.employeeMapper.toDto(this.employeeRepository.update(employee));
+        Employee employee = employeeMapper.fromDto(employeeDto);
+        return employeeMapper.toDto(employeeRepository.update(employee));
     }
 
     public List<EmployeeDto> getAll() {
-
         return employeeRepository.getAllEmployees()
                 .stream()
                 .map(employee -> employeeMapper.toDto(employee))
@@ -65,10 +57,32 @@ public class EmployeeService {
     }
 
     public List<EmployeeDto> sort(Comparator<Employee> comparator) {
-
         return this.employeeRepository.sortAllEmployees(comparator)
                 .stream()
-                .map(employee -> employeeMapper.toDto(employee))
+                .map(employeeMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<EmployeeData> getEmployeeSalaryByMonthAndYear(String pesel, int month, int year) {
+        return this.employeeDataRepository.getEmployeeSalaryByMonthAndYear(pesel, month, year)
+                .stream()
+                .map((EmployeeData employeeDataDto) -> EmployeeDataMapper.toDto(employeeDataDto))
+                .collect(Collectors.toList());
+    }
+
+    public BigDecimal getTotalSalaryForAllEmployees() {
+        return this.employeeDataRepository.getTotalSalaryForAllEmployees();
+    }
+
+    public BigDecimal getSalaryByPeselInYear(String pesel, int year) {
+        return this.employeeDataRepository.getSalaryByPeselInYear(pesel, year);
+    }
+
+    public BigDecimal getTotalSalaryForEmployee(String pesel) {
+        return this.employeeDataRepository.getTotalSalaryForEmployee(pesel);
+    }
+
+    public Map<Integer, BigDecimal> getTotalSalaryForEmployeeInAllYears(String pesel) {
+        return this.employeeDataRepository.getTotalSalaryForEmployeeInAllYears(pesel);
     }
 }

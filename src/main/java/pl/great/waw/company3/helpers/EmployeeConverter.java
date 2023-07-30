@@ -2,7 +2,6 @@ package pl.great.waw.company3.helpers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.great.waw.company3.domain.Employee;
@@ -24,7 +23,7 @@ public class EmployeeConverter {
 
     public void loadEmployee(String path) throws IOException {
         String employeeJson = Files.readString(Path.of(path));
-        List<Employee> employees = objectMapper.readValue(employeeJson, new TypeReference<List<Employee>>() {
+        List<Employee> employees = objectMapper.readValue(employeeJson, new TypeReference<>() {
         });
 
         employeeRepository.createAll(employees);

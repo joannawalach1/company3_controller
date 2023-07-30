@@ -31,7 +31,7 @@ class EmployeeCrudRepositoryTest {
     @Test
     void createEmployee() {
         Employee employee = this.employeeRepo.create(new Employee("23456", "Steve", "Brown", BigDecimal.ONE));
-        assertTrue(employee != null);
+        assertNotNull(employee);
         assertEquals(TEST_PESEL, employee.getPesel());
         assertEquals(TEST_FIRSTNAME, employee.getFirstName());
         assertEquals(TEST_LASTNAME, employee.getLastName());

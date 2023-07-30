@@ -13,6 +13,7 @@ public class EmployeeData {
     private LocalDateTime created;
     private LocalDateTime updated;
 
+
     public EmployeeData(String id, String employeePesel, int month, int year, BigDecimal salaryMonth, LocalDateTime created, LocalDateTime updated) {
         this.id = id;
         this.employeePesel = employeePesel;
@@ -102,7 +103,7 @@ public class EmployeeData {
                 ", employeePesel='" + employeePesel + '\'' +
                 ", month=" + month +
                 ", year=" + year +
-                ", monthSalary=" + salaryMonth +
+                ", salaryMonth=" + salaryMonth +
                 ", created=" + created +
                 ", updated=" + updated +
                 '}';
